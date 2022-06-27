@@ -25,4 +25,5 @@ Ar_maf1.dist_all
 library(MASS)
 write.matrix (Ar_maf1.dist_all, file = "Ar233_distance.matrix.bitwise.txt")
 
-# In the exported file you will see distance between replicates is zero
+# In the exported file you will see distance between three pairs of replicates is zero
+# this shows minimum genotyping error and no need for further filtering
