@@ -3,7 +3,11 @@
 library(vcfR)
 library(poppr)
 
-Ar_maf1_vcf <- read.vcfR("G:/My Drive/GRDC-Ascochyta/Paper_Microbial_Genomics/data/filtered_233/snp.ann.all_filtered.vcf")
+#for MAC
+Ar_maf1_vcf <- read.vcfR("~/Library/CloudStorage/GoogleDrive-vaghefi.n@gmail.com/My Drive/GRDC-Ascochyta/Paper_Microbial_Genomics/Data/filtered_233/snp.ann.all_filtered.vcf")
+
+#Windows
+#Ar_maf1_vcf <- read.vcfR("G:/My Drive/GRDC-Ascochyta/Paper_Microbial_Genomics/Data/filtered_233/snp.ann.all_filtered.vcf")
 
 Ar_genind_maf1 <- vcfR2genind(Ar_maf1_vcf)
 Ar_genind_maf1
