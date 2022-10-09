@@ -4,46 +4,44 @@ library(vcfR)
 library(poppr)
 
 #Windows
-#Ar230_maf1_vcf <- read.vcfR("G:/My Drive/GRDC-Ascochyta/Paper_Microbial_Genomics2/Data/SNPeff/snp.ann.vcf")
+Ar230_maf1_vcf <- read.vcfR("G:/My Drive/GRDC-Ascochyta/Paper_Microbial_Genomics3/0Data/all/all.ann.vcf")
 #MAC
-Ar230_maf1_vcf <- read.vcfR("~/Library/CloudStorage/GoogleDrive-vaghefi.n@gmail.com/My Drive/GRDC-Ascochyta/Paper_Microbial_Genomics2/Data/SNPeff/snp.ann.vcf")
+Ar230_maf1_vcf <- read.vcfR("~/Library/CloudStorage/GoogleDrive-vaghefi.n@gmail.com/My Drive/GRDC-Ascochyta/Paper_Microbial_Genomics3/0Data/SNP/snp.ann.recode.vcf")
+
 Ar230_genind_maf1 <- vcfR2genind(Ar230_maf1_vcf)
 Ar230_genind_maf1
 indNames(Ar230_genind_maf1)
-
 X <- genind2df(Ar230_genind_maf1)
 Ar230snps_maf1 <- df2genind(X, ploidy = 1, ncode=1)
 indNames(Ar230snps_maf1)
-
 Ar230_maf1 <- poppr::as.genclone(Ar230snps_maf1)
 Ar230_maf1
-# 2759 loci
+# 2388 loci
 indNames(Ar230_maf1)
 
-
 ## SET STRATA
-
+#Windows
+strata.df <- read.csv("G:/My Drive/GRDC-Ascochyta/Paper_Microbial_Genomics3/0Data/230_strata.csv", head = FALSE, sep = ",")
 #MAC
-strata.df <- read.csv("~/Library/CloudStorage/GoogleDrive-vaghefi.n@gmail.com/My Drive/GRDC-Ascochyta/Paper_Microbial_Genomics2/Data/230_strata.csv", head = FALSE, sep = ",")
+strata.df <- read.csv("~/Library/CloudStorage/GoogleDrive-vaghefi.n@gmail.com/My Drive/GRDC-Ascochyta/Paper_Microbial_Genomics3/0Data/230_strata.csv", head = FALSE, sep = ",")
+
 strata(Ar230_maf1) <- strata.df
-splitStrata(Ar230_maf1) <- ~Year/State/Location/Farm/Host/Zone/ICC3996_rating/Genesis090_rating/HatTrick_rating/Seamer_rating/Path1/Path2
+splitStrata(Ar230_maf1) <- ~Year/State/Location/Farm/Host/Zone/ICC3996_rating/Genesis090_rating/HatTrick_rating/Seamer_rating/Path1/Path2/Oldcluster/group
 Ar230_maf1
 # This is a genclone object
 # 230 original multilocus genotypes 
 # 230 haploid individuals
-# 2759 codominant loci
-# 12 strata - Year, State, Location, ..., Seamer_rating, Path1, Path2
+# 2388 codominant loci
+# 14 strata - Year, State, Location, ..., Seamer_rating, Path1, Path2
 # 0 populations defined. 
 
-# To view the table showing all strata
+## To view the table showing all strata
 library(dplyr)
 Allstrata <- strata(Ar230_maf1) %>% group_by(Year,State, Location, Farm, Host, Zone, ICC3996_rating, Genesis090_rating, HatTrick_rating, Seamer_rating, Path1, Path2) %>% summarize(Count = n())
 View(Allstrata)
 nameStrata(Ar230_maf1)
 
-
 ## DISTANCE BETWEEN INDIVIDUALS (PAIRWISE)
-
 library("poppr")
 library("pegas")
 library("ape")
@@ -60,8 +58,8 @@ X <- genind2loci(Ar230_genind_maf1)
 pairwise_genetic_distance <- dist.gene(X, method="pairwise", pairwise.deletion = FALSE, variance = FALSE)
 hist(pairwise_genetic_distance)
 # The option pairwise.deletion = FALSE removes all loci with one missing value
-# can see on the histogram that we get a maximum distance of around 400 loci
-# but the majority of individuals are different at around 200-250 loci
+# can see on the histogram that we get a maximum distance of around 350 loci
+# but the majority of individuals are different at around 150-200 loci
 
 #gives density on y axis
 ratio_of_allelic_differences <- diss.dist(Ar230_genind_maf1, percent = TRUE, mat = FALSE)
@@ -77,21 +75,22 @@ hist(ratio_of_allelic_differences)
 Number_of_allelic_differences <- diss.dist(Ar230_genind_maf1, percent = FALSE, mat = FALSE)
 hist(Number_of_allelic_differences)
 
-
 ## CHECK MISSING DATA
-
 setPop(Ar230_maf1) <- ~Zone
 Missing_data <- info_table(Ar230_maf1, type = "missing")
-sum(Missing_data["Total", 1:2759] > 0)
-barplot(Missing_data["Total", 1:2759], xlab = "Locus", ylab = "Proportion Missing", las=2)
+sum(Missing_data["Total", 1:2388] > 0)
+barplot(Missing_data["Total", 1:2388], xlab = "Locus", ylab = "Proportion Missing", las=2)
 # no locus has more than 0.1 missing data
 summary(Ar230_maf1)
 # your will see that heterozygosity observed is zero and missing data is only 0.35%
 
-
+###################################################################################
 ## IMPORT DATA WITH REPLICATES REMOVED - LOW AND MODIFIER LOCI FOR POP GEN ANALYSES
 
-Ar230_LM_maf1_vcf <- read.vcfR("~/Library/CloudStorage/GoogleDrive-vaghefi.n@gmail.com/My Drive/GRDC-Ascochyta/Paper_Microbial_Genomics2/Data/SNPeff/lowmodifierimpact.vcf")
+#Windows
+Ar230_LM_maf1_vcf <- read.vcfR("G:/My Drive/GRDC-Ascochyta/Paper_Microbial_Genomics3/0Data/SNP/SNP.ann_lowmodifierimpact.vcf")
+#MAC
+Ar230_LM_maf1_vcf <- read.vcfR("~/Library/CloudStorage/GoogleDrive-vaghefi.n@gmail.com/My Drive/GRDC-Ascochyta/Paper_Microbial_Genomics3/0Data/SNP/SNP.ann_lowmodifierimpact.vcf")
 Ar230_LM_genind_maf1 <- vcfR2genind(Ar230_LM_maf1_vcf)
 Ar230_LM_genind_maf1
 indNames(Ar230_LM_genind_maf1)
@@ -104,11 +103,14 @@ Ar230_LM_maf1 <- poppr::as.genclone(Ar230snps_LM_maf1)
 Ar230_LM_maf1
 indNames(Ar230_LM_maf1)
 
-
 ##   SET STRATA
-strata.df <- read.csv("~/Library/CloudStorage/GoogleDrive-vaghefi.n@gmail.com/My Drive/GRDC-Ascochyta/Paper_Microbial_Genomics2/Data/230_strata.csv", head = FALSE, sep = ",")
+#Windows
+strata.df <- read.csv("G:/My Drive/GRDC-Ascochyta/Paper_Microbial_Genomics3/0Data/230_strata.csv", head = FALSE, sep = ",")
+#MAC
+strata.df <- read.csv("~/Library/CloudStorage/GoogleDrive-vaghefi.n@gmail.com/My Drive/GRDC-Ascochyta/Paper_Microbial_Genomics3/0Data/230_strata.csv", head = FALSE, sep = ",")
+
 strata(Ar230_LM_maf1) <- strata.df
-splitStrata(Ar230_LM_maf1) <- ~Year/State/Location/Farm/Host/Zone/ICC3996_rating/Genesis090_rating/HatTrick_rating/Seamer_rating/Path1/Path2
+splitStrata(Ar230_LM_maf1) <- ~Year/State/Location/Farm/Host/Zone/ICC3996_rating/Genesis090_rating/HatTrick_rating/Seamer_rating/Path1/Path2/oldcluster/group
 Ar230_LM_maf1
 
 #To view the table showing all strata
@@ -117,11 +119,54 @@ Allstrata <- strata(Ar230_LM_maf1) %>% group_by(Year,State, Location, Farm, Host
 View(Allstrata)
 nameStrata(Ar230_LM_maf1)
 
+# This is applied on allele frequency within individuals (genind object). 
+# Function dist() from adegenet provides different options. 
+# using the euclidean distance among vector of allele frequencies.
+distgenEUCL <- dist(Ar230_LM_genind_maf1, method = "euclidean", diag = FALSE, upper = FALSE, p = 1)
+hist(distgenEUCL)
+
+X <- genind2loci(Ar230_LM_genind_maf1)
+pairwise_genetic_distance <- dist.gene(X, method="pairwise", pairwise.deletion = FALSE, variance = FALSE)
+hist(pairwise_genetic_distance)
+# The option pairwise.deletion = FALSE removes all loci with one missing value
+# can see on the histogram that we get a maximum distance of around 350 loci
+# but the majority of individuals are different at around 150-200 loci
+
+#gives density on y axis
+ratio_of_allelic_differences <- diss.dist(Ar230_LM_genind_maf1, percent = TRUE, mat = FALSE)
+hist(ratio_of_allelic_differences, freq=FALSE)
+#gives density on y axis
+Number_of_allelic_differences <- diss.dist(Ar230_LM_genind_maf1, percent = FALSE, mat = FALSE)
+hist(Number_of_allelic_differences, freq=FALSE)
+
+#gives frequency on y axis
+ratio_of_allelic_differences <- diss.dist(Ar230_LM_genind_maf1, percent = TRUE, mat = FALSE)
+hist(ratio_of_allelic_differences, plot=TRUE, xlim=0.07)
+#gives frequency on y axis
+Number_of_allelic_differences <- diss.dist(Ar230_LM_genind_maf1, percent = FALSE, mat = FALSE)
+hist(Number_of_allelic_differences)
+
 #define populations based on strata
 popNames(Ar230_LM_maf1)
 setPop(Ar230_LM_maf1) <- ~Year
 Ar230_LM_maf1
 
+# to predict a cut off value
+Ar230_LM_maf1_thresholds <- mlg.filter(Ar230_LM_maf1, distance = bitwise.dist, stats = "THRESHOLDS", threshold = 1)
+pthresh  <- filter_stats(Ar230_LM_maf1, distance=bitwise.dist, plot = TRUE, stats = "THRESHOLD", threads = 1L)
+cutoff_predictor(pthresh$farthest, fraction = 0.5)
+(e <- .Machine$double.eps^0.5)
+mlg.filter(Ar230_LM_maf1, distance = bitwise.dist) <- 0.004132231 + e
+Ar230_LM_maf1
+indNames(Ar230_LM_maf1)
+
+# 172 contracted multilocus genotypes
+# (0.004) [t], (bitwise.dist) [d], (farthest) [a] 
+# 230 haploid individuals
+# 2299 codominant loci
+
+# If like to get the original MLGs 
+mll(Ar230_LM_maf1)<- "original"
 
 ##  AMOVA 
 setPop(Ar230_LM_maf1) <- ~Year
@@ -161,9 +206,9 @@ cols3 <- c("darkorange1", "purple", "light blue","cyan", "blue", "Yellow2")
 set.seed(999)
 xvalAr2021 <- xvalDapc(tab(Ar230_LM_maf1, NA.method = "mean"), pop(Ar230_LM_maf1), training.set = 0.7)
 set.seed(999)
-xvalAr2021 <- xvalDapc(tab(Ar230_LM_maf1, NA.method = "mean"), pop(Ar230_LM_maf1), parallel = "multicore", ncpus = 4L, training.set = 0.9, n.rep = 1000, n.pca = 70:90)
+xvalAr2021 <- xvalDapc(tab(Ar230_LM_maf1, NA.method = "mean"), pop(Ar230_LM_maf1), parallel = "multicore", ncpus = 4L, training.set = 0.9, n.rep = 1000, n.pca = 70:110)
 xvalAr2021 [2:6]
-#80
+#97
 popNames(Ar230_LM_maf1)
 
 dapc_year <- dapc(Ar230_LM_maf1, var.contrib = TRUE, scale = FALSE, n.pca = 80, n.da = nPop(Ar230_LM_maf1) - 1)
@@ -175,7 +220,8 @@ contrib_Year_axis1
 contrib_Year_axis2 <- loadingplot(dapc_year$var.contr, axis = 2, thres = 0.005)
 contrib_Year_axis2
 
-# DAPC with populations pre-defined based on AE Zone
+# DAPC with populations pre-defined balibrary(dplyr)
+sed on AE Zone
 setPop(Ar230_LM_maf1) <- ~Zone
 popNames(Ar230_LM_maf1)
 
@@ -185,9 +231,9 @@ Ar230_LM_maf1_zone <- popsub(Ar230_LM_maf1, c(1,2,3,5,6,7,8,9,10,11))
 set.seed(999)
 xvalAr2021 <- xvalDapc(tab(Ar230_LM_maf1_zone, NA.method = "mean"), pop(Ar230_LM_maf1_zone), training.set = 0.7)
 set.seed(999)
-xvalAr2021 <- xvalDapc(tab(Ar230_LM_maf1_zone, NA.method = "mean"), pop(Ar230_LM_maf1_zone), parallel = "multicore", ncpus = 4L, training.set = 0.9, n.rep = 1000, n.pca = 30:60)
+xvalAr2021 <- xvalDapc(tab(Ar230_LM_maf1_zone, NA.method = "mean"), pop(Ar230_LM_maf1_zone), parallel = "multicore", ncpus = 4L, training.set = 0.9, n.rep = 1000, n.pca = 50:70)
 xvalAr2021 [2:6]
-#54
+#66
 popNames(Ar230_LM_maf1_zone)
 cols <- c("Yellow2", "dark green", "green", "turquoise", "sky blue", "magenta", "orange", "purple", "blue", "red")
 dapc.zone <- dapc(Ar230_LM_maf1_zone, var.contrib = TRUE, scale = FALSE, n.pca = 54, n.da = nPop(Ar230_LM_maf1_zone) - 1)
@@ -217,29 +263,33 @@ Gst_Hedrick(Ar230_LM_maf1_year)
 ##  DISTANCE TREE GENLIGHT OBJECT
 
 #MAC
-Ar230_LM_maf1_vcf <- read.vcfR("~/Library/CloudStorage/GoogleDrive-vaghefi.n@gmail.com/My Drive/GRDC-Ascochyta/Paper_Microbial_Genomics2/Data/SNPeff/lowmodifierimpact.vcf")
+Ar230_LM_maf1_vcf <- read.vcfR("~/Library/CloudStorage/GoogleDrive-vaghefi.n@gmail.com/My Drive/GRDC-Ascochyta/Paper_Microbial_Genomics3/0Data/SNP/SNP.ann_lowmodifierimpact.vcf")
 Ar230_LM_maf1_vcf
 Ar230_LM_maf1_genlight <- vcfR2genlight(Ar230_LM_maf1_vcf)
 Ar230_LM_maf1_genlight
 indNames(Ar230_LM_maf1_genlight)
 ploidy(Ar230_LM_maf1_genlight) <- 1
 
-strata.df <- read.csv("~/Library/CloudStorage/GoogleDrive-vaghefi.n@gmail.com/My Drive/GRDC-Ascochyta/Paper_Microbial_Genomics2/Data/230_strata.csv", head = FALSE, sep = ",")
+strata.df <- read.csv("~/Library/CloudStorage/GoogleDrive-vaghefi.n@gmail.com/My Drive/GRDC-Ascochyta/Paper_Microbial_Genomics3/0Data/230_strata.csv", head = FALSE, sep = ",")
 strata(Ar230_LM_maf1_genlight) <- strata.df
-splitStrata(Ar230_LM_maf1_genlight) <- ~Year/State/Location/Farm/Host/Zone/ICC3996_rating/Genesis090_rating/HatTrick_rating/Seamer_rating/Path1/Path2
+splitStrata(Ar230_LM_maf1_genlight) <- ~Year/State/Location/Farm/Host/Zone/ICC3996_rating/Genesis090_rating/HatTrick_rating/Seamer_rating/Path1/Path2/Oldcluster/group
 Ar230_LM_maf1_genlight
 
 setPop(Ar230_LM_maf1_genlight) <- ~Year
 popNames(Ar230_LM_maf1_genlight)
 
+setPop(Ar230_LM_maf1_genlight) <- ~Oldcluster
+popNames(Ar230_LM_maf1_genlight)
+
 ind_dist <- bitwise.dist(Ar230_LM_maf1_genlight)
-Ar2021_genlight_tree <- aboot(Ar230_LM_maf1_genlight, tree = "nj", distance = bitwise.dist, sample = 100, showtree = T, cutoff = 50, quiet = T)
+Ar2021_genlight_tree <- aboot(Ar230_LM_maf1_genlight, tree = "nj", distance = bitwise.dist, sample = 100, showtree = T, cutoff = 70, quiet = T)
 
 # Visualize - colour by year of collection
 cols <- c("Red3", "darkorange1", "cyan", "yellow2", "light blue","purple")
+cols <- c("Darkorange3", "darkgreen","purple4")
 popNames(Ar230_LM_maf1_genlight)
 library(ape)
-plot.phylo(Ar2021_genlight_tree, cex = 0.9, font = 1, adj = 0, tip.color = cols[Ar230_LM_maf1_genlight$pop], label.offset = 0.0001)
+plot.phylo(Ar2021_genlight_tree, cex = 0.9, font = 1, adj = 0, tip.color = cols[Ar230_LM_maf1_genlight$pop], label.offset = 0.0001, node.pos = NULL, direcion="downward")
 plot.phylo(Ar2021_genlight_tree, type="fan", cex = 0.9, font = 2, adj = 0, tip.color = cols[Ar230_LM_maf1_genlight$pop], label.offset = 0.0001)
 nodelabels(Ar2021_genlight_tree$node.label, adj = c(1.3, -0.5), frame = "n", cex = 0.6, font = 0.5, xpd = TRUE)
 axisPhylo(3)
@@ -328,7 +378,7 @@ summary(ind_miss)
 
 library(adegenet)
 library(vcfR)
-Ar230_LM_maf1_vcf <- read.vcfR("~/Library/CloudStorage/GoogleDrive-vaghefi.n@gmail.com/My Drive/GRDC-Ascochyta/Paper_Microbial_Genomics2/data/SNPeff/lowmodifierimpact.vcf")
+Ar230_LM_maf1_vcf <- read.vcfR("~/Library/CloudStorage/GoogleDrive-vaghefi.n@gmail.com/My Drive/GRDC-Ascochyta/Paper_Microbial_Genomics3/0Data/SNP/SNP.ann_lowmodifierimpact.vcf")
 Ar230_LM_maf1_vcf
 
 Ar230_maf1_LM_genlight <- vcfR2genlight(Ar230_LM_maf1_vcf)
@@ -340,9 +390,9 @@ Ar230_maf1_LM_genlight.clusters <- find.clusters(Ar230_maf1_LM_genlight, max.n.c
 #3
 dapcAr2021_LM_maf1 <- dapc(Ar230_maf1_LM_genlight, Ar230_maf1_LM_genlight.clusters$grp, var.contrib = TRUE)
 # Choose the number PCs to retain (>=1): 
-#75
+#55
 #2
-scatter(dapcAr2021_LM_maf1, legend = TRUE, cleg = 1, col = rainbow(6), clabel = 0, cex = 1.5, scree.da = TRUE, scree.pca = TRUE, posi.pca = "topleft", posi.da = "bottomleft", ratio.da = 0.15, ratio.pca = 0.15, inset.da = 0.01, inset.pca = 0.01, posi.leg = "bottomright")
+scatter(dapcAr2021_LM_maf1, legend = TRUE, cleg = 1, col = cols, clabel = 0, cex = 1.5, scree.da = TRUE, scree.pca = TRUE, posi.pca = "topleft", posi.da = "bottomleft", ratio.da = 0.15, ratio.pca = 0.15, inset.da = 0.01, inset.pca = 0.01, posi.leg = "bottomright")
 
 # check which isolates belong to each of the three clusters
 dapcAr2021_LM_maf1
@@ -351,7 +401,7 @@ dapcAr2021_LM_maf1$grp
 ###   DAPC again for the figure
 library(adegenet)
 library(vcfR)
-Ar230_LM_maf1_vcf <- read.vcfR("~/Library/CloudStorage/GoogleDrive-vaghefi.n@gmail.com/My Drive/GRDC-Ascochyta/Paper_Microbial_Genomics2/data/SNPeff/lowmodifierimpact.vcf")
+Ar230_LM_maf1_vcf <- read.vcfR("~/Library/CloudStorage/GoogleDrive-vaghefi.n@gmail.com/My Drive/GRDC-Ascochyta/Paper_Microbial_Genomics3/0Data/SNP/SNP.ann_lowmodifierimpact.vcf")
 Ar230_LM_maf1_vcf
 
 pop.data <- read.table("~/Library/CloudStorage/GoogleDrive-vaghefi.n@gmail.com/My Drive/GRDC-Ascochyta/Paper_Microbial_Genomics2/data/230_samples_data_table.txt", sep = "\t", header = TRUE)
@@ -366,9 +416,10 @@ maxK <- 10
 myMat <- matrix(nrow=10, ncol=maxK)
 colnames(myMat) <- 1:ncol(myMat)
 for(i in 1:nrow(myMat)){
-  grp <- find.clusters(Ar230_maf1_LM_genlight, n.pca = 75, choose.n.clust = FALSE,  max.n.clust = maxK, n.start=1000)
+  grp <- find.clusters(Ar230_maf1_LM_genlight, n.pca = 55, choose.n.clust = FALSE,  max.n.clust = maxK, n.start=1000)
   myMat[i,] <- grp$Kstat
 }
+
 
 library(ggplot2)
 library(reshape2)
@@ -390,8 +441,8 @@ dapc_l <- vector(mode = "list", length = length(my_k))
 
 for(i in 1:length(dapc_l)){
   #set.seed(9)
-  grp_l[[i]] <- find.clusters(Ar230_maf1_LM_genlight, n.pca = 75, n.clust = my_k[i], n.start=1000)
-  dapc_l[[i]] <- dapc(Ar230_maf1_LM_genlight, pop = grp_l[[i]]$grp, n.pca = 75, n.da = my_k[i])
+  grp_l[[i]] <- find.clusters(Ar230_maf1_LM_genlight, n.pca = 50, n.clust = my_k[i], n.start=1000)
+  dapc_l[[i]] <- dapc(Ar230_maf1_LM_genlight, pop = grp_l[[i]]$grp, n.pca = 50, n.da = my_k[i])
 }
 
 my_df <- as.data.frame(dapc_l[[ length(dapc_l) ]]$ind.coord)
