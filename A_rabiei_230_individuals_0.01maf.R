@@ -4,7 +4,7 @@ library(vcfR)
 library(poppr)
 
 #Windows
-#Ar230_maf1_vcf <- read.vcfR("G:/My Drive/GRDC-Ascochyta/Paper_Microbial_Genomics3/0Data/all/all.ann.vcf")
+Ar230_maf1_vcf <- read.vcfR("G:/My Drive/GRDC-Ascochyta/Paper_Microbial_Genomics3/0Data/all/all.ann.vcf")
 #MAC
 Ar230_maf1_vcf <- read.vcfR("~/Library/CloudStorage/GoogleDrive-vaghefi.n@gmail.com/My Drive/GRDC-Ascochyta/Paper_Microbial_Genomics3/0Data/SNP/snp.ann.recode.vcf")
 
